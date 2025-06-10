@@ -9,8 +9,10 @@ export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({
     baseUrl:
-      import.meta.env.VITE_API_BASE_URL ||
-      "https://data-app-be-production.up.railway.app/v1/" + "dashboard/",
+      `${
+        import.meta.env.VITE_API_BASE_URL ||
+        "https://data-app-be-production.up.railway.app/v1/"
+      }` + "dashboard/",
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("token");
       if (token) {

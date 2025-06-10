@@ -4,7 +4,8 @@ export const UserRoles = {
 };
 export interface AuthUser {
   id: string;
-  name: string;
+  firstname: string;
+  lastname: string;
   email: string;
   avatarUrl?: string;
   role: UserRolesType;

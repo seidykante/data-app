@@ -46,7 +46,7 @@ export default function HistoryTable({
   // }, [currentPage, histories, itemsPerPage]);
 
   const truncateId = (id: string) =>
-    id.length <= 8 ? id : `${id.slice(0, 6)}...${id.slice(-4)}`;
+    id?.length <= 8 ? id : `${id?.slice(0, 6)}...${id?.slice(-4)}`;
 
   const toggleDropdown = (id: string) => {
     setDropdownVisibleId((prev) => (prev === id ? null : id));
@@ -194,11 +194,12 @@ export default function HistoryTable({
                         {dropdownVisibleId === entry.id && (
                           <div
                             className={`absolute z-20 w-36 bg-white border shadow-lg rounded-md right-0
-                              ${
-                                index === safeHistories.length - 1 ||
-                                index === safeHistories.length - 2
+                              ${ safeHistories?.length > 2 ?
+                                index === safeHistories?.length - 1 ||
+                                index === safeHistories?.length - 2
                                   ? "bottom-full mb-2"
                                   : "top-full mt-2"
+                                  : "bottom-full -mb-6"
                               }
                             `}
                           >
@@ -250,7 +251,7 @@ export default function HistoryTable({
 
       <div className="mt-4">
         <Pagination
-          totalItems={safeHistories.length}
+          totalItems={safeHistories?.length || 0}
           itemsPerPage={itemsPerPage}
           currentPage={currentPage}
           onPageChange={setCurrentPage}

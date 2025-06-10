@@ -28,12 +28,15 @@ export default function Login() {
       }
       const data = response.data;
 
+      const authUser = data.user;
+
       const user: AuthUser = {
-        id: data.id,
-        name: data.firstname + " " + data.lastname,
-        email: data.email,
-        role: data.role,
-        avatarUrl: "/public/profile.jpg", // Adjust if backend sends one
+        id: authUser._id,
+        firstname: authUser.firstname,
+        lastname: authUser.lastname,
+        email: authUser.email,
+        role: authUser.role,
+        avatarUrl: "/", 
       };
 
       const token = data.token;

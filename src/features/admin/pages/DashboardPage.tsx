@@ -110,6 +110,9 @@ const DashboardPage = () => {
     ...user,
     id: user.id,
   }));
+
+  console.log("usersHistories", usersHistories);
+
   const totalUsers = usersResponse?.data?.pagination?.totalItems || 0;
 
   return (
