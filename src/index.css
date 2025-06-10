@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "Inter", sans-serif; 
+}
+
+.custom-datepicker .react-datepicker__month-container {
+  margin-right: 20px;
+}
+
+.custom-datepicker .react-datepicker__month-container:nth-last-child(2) {
+  margin-right: 0;
+}
+.custom-datepicker .react-datepicker__month {
+  width: 100%;
+}
+.custom-datepicker .react-datepicker__month-text {
+  font-size: 1.5rem;
+}
+.custom-datepicker .react-datepicker__day {
+  width: 2.4rem;
+  height: 2.2rem;
+  line-height: 2.5rem;
+}
+.custom-datepicker .react-datepicker__day--selected {
+  background-color: #4a90e2;
+  color: white;
+}
+.custom-datepicker .react-datepicker__day--keyboard-selected {
+  background-color: #4a90e2;
+  color: white;
+}
+.custom-datepicker .react-datepicker__day--today {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+@media (min-width: 640px) {
+  .custom-datepicker {
+    max-width: 640px; /* sm */
+  }
+}
+@media (min-width: 768px) {
+  .custom-datepicker {
+    max-width: 768px; /* md */
+  }
+}
+@media (min-width: 1024px) {
+  .custom-datepicker {
+    max-width: 1024px; /* lg */
+  }
+}
+@media (min-width: 1280px) {
+  .custom-datepicker {
+    max-width: 1280px; /* xl */
+  }
+}
+@media (min-width: 1536px) {
+  .custom-datepicker {
+    max-width: 1536px; /* 2xl */
+  }
+}
+/* .custom-datepicker .react-datepicker__header {
+  background-color: #4a90e2;
+  color: white;
+} */
