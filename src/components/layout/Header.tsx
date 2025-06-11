@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
+import useAuth from "../../features/auth/hooks/useAuth";
 // import Search from "../common/Search";
 
-// Placeholder user avatar
-const userAvatarUrl = "/profile.jpg";
 
 interface HeaderProps {
   children?: ReactNode;
@@ -15,6 +14,10 @@ const Header = ({ children, searchBar, className }: HeaderProps) => {
   //   // Handle search change logic here
   //   alert(`Searching for: ${value}`);
   // };
+
+  const { user } = useAuth();
+
+  // console.log("user", user);
 
   return (
     <div className={`${className}`}>
@@ -31,11 +34,14 @@ const Header = ({ children, searchBar, className }: HeaderProps) => {
           {/* User Avatar */}
           <div className="flex items-center space-x-2">
             <img
-              src={userAvatarUrl}
+              src={user?.avatarUrl || "/"}
               alt="User Avatar"
               className="h-10 w-10 rounded-full object-cover border-2 border-gray-200"
               onError={(e) =>
-                (e.currentTarget.src = `https://placehold.co/50x50/4A90E2/FFFFFF?text=AD`)
+                (e.currentTarget.src = `https://placehold.co/50x50/4A90E2/FFFFFF?text=${
+                  (user?.firstname ? user.firstname[0]?.toUpperCase() : "") +
+                  (user?.lastname ? user.lastname[0]?.toUpperCase() : "")
+                }`)
               }
             />
           </div>

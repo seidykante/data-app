@@ -1,10 +1,8 @@
 "use client";
-import { useMemo, useState, type SetStateAction } from "react";
+import { useState } from "react";
 import Pagination from "./Pagination";
 import { Database, EllipsisVertical, FolderClock } from "lucide-react";
 import type { User, UserHealthLog } from "../../types";
-import { data } from "react-router-dom";
-import type { Dispatch } from "@reduxjs/toolkit";
 
 type TableMode = "user" | "data";
 interface paginationProps {
@@ -19,11 +17,11 @@ interface Props {
   histories: User[] | UserHealthLog[];
   onActionClick?: (action: string, userId: string) => void;
   itemsPerPage?: number;
-  // currentPage?: number;
   onPageChange?: (page: number) => void;
   pagination: paginationProps;
   currentPage: number;
   setCurrentPage: void;
+  // currentPage?: number;
   // totalItems?: number;
 }
 

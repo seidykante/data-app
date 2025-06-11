@@ -52,20 +52,42 @@ const UsersPage = () => {
   );
 
   const users = usersResponse?.data?.data || [];
+
+  const healthLogsQueryParams = viewingDataUser
+    ? {
+        userId: viewingDataUser.id,
+        page: currentPage,
+        limit: 10,
+        search: searchTerm,
+        startDate: currentFilterDates.startDate?.toISOString(),
+        endDate: currentFilterDates.endDate?.toISOString(),
+      }
+    : skipToken;
+
   const {
-    data: userLogs,
+    data: userLogsResponse,
     isLoading: logsLoading,
     error: logsError,
-  } = useGetUserHealthLogsQuery(
-    viewingDataUser
-      ? { userId: viewingDataUser.id, page: 1, limit: 10 }
-      : skipToken
-  );
+  } = useGetUserHealthLogsQuery(healthLogsQueryParams);
+
+  const userLogs = userLogsResponse?.data?.data || [];
+  const totalLogs = userLogsResponse?.data?.pagination?.totalItems || 0;
+
+  // const {
+  //   data: userLogs,
+  //   isLoading: logsLoading,
+  //   error: logsError,
+  // } = useGetUserHealthLogsQuery(
+  //   viewingDataUser
+  //     ? { userId: viewingDataUser.id, page: 1, limit: 10 }
+  //     : skipToken
+  // );
   // console.log("userlog", userLogs?.data?.data);
   const [sendReminder, { isLoading: isSending }] = useSendReminderMutation();
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
+    setCurrentPage(1);
     // alert(`Searching for: ${value}`);
   };
 
@@ -100,11 +122,13 @@ const UsersPage = () => {
   ) => {
     console.log("Selected period:", startDate, endDate);
     setCurrentFilterDates({ startDate, endDate });
+    setCurrentPage(1);
     // Call RTK Query with new date filters or update local state for filtering
   };
 
   const handleClearDateFilter = () => {
     setCurrentFilterDates({ startDate: null, endDate: null });
+    setCurrentPage(1);
   };
 
   const handleActionClick = (action: string, userId: string) => {
@@ -115,6 +139,11 @@ const UsersPage = () => {
       const user = users.find((u: any) => u.id === userId);
       if (user) {
         setViewingDataUser(user);
+
+        // When switching to viewing user data, reset search and filters
+        setCurrentPage(1);
+        setSearchTerm("");
+        setCurrentFilterDates({ startDate: null, endDate: null });
       }
     }
   };
@@ -126,7 +155,7 @@ const UsersPage = () => {
     if (viewingDataUser) {
       console.log("Exporting health logs for user:", viewingDataUser);
       // Export health logs
-      const logs = userLogs?.data?.data;
+      const logs = userLogs;
       if (!logs?.length) return;
 
       const headers = "Date,Glucose,Water,Meal,Heart Rate,Exercise,Sleep\n";
@@ -176,6 +205,9 @@ const UsersPage = () => {
     }
   };
 
+  // console.log("Users data:", users);
+  // console.log("Users logs:", userLogs);
+
   // Filter users based on current filter
   const filteredUsers = users.filter((user: any) => {
     const matchesSearch =
@@ -210,6 +242,20 @@ const UsersPage = () => {
     id: user.id,
   }));
 
+  const filteredUserLogs =
+    userLogs?.filter((log: any) => {
+      const logDate = new Date(log.date);
+      const matchesDate =
+        (!currentFilterDates.startDate ||
+          logDate >= currentFilterDates.startDate) &&
+        (!currentFilterDates.endDate || logDate <= currentFilterDates.endDate);
+
+      const logValues = Object.values(log).map(String).join(" ").toLowerCase();
+      const matchesSearch = logValues.includes(searchTerm.toLowerCase());
+
+      return matchesDate && matchesSearch;
+    }) || [];
+
   return (
     <div>
       <Header>
@@ -221,7 +267,7 @@ const UsersPage = () => {
           </button>
           {viewingDataUser ? (
             <span className="text-lg text-gray-500">
-              {">> " + viewingDataUser?.firstname}
+              {">> " + viewingDataUser?.firstname + viewingDataUser.lastname}
             </span>
           ) : (
             ""

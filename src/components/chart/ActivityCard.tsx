@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import type { ActivityLogPoint } from "../../types";
 import Card from "../common/Card";
-import { sampleActivityData } from "../../pages/_mockData";
+// import { sampleActivityData } from "../../pages/_mockData";
 import ActivityChart from "./ActivityChart";
 import { useGetActivityLogsQuery } from "../../services/admin/adminApi";
 
