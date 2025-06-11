@@ -19,7 +19,7 @@ import {
 } from "../../../services/admin/adminApi";
 
 import { useGetUsersWithFiltersQuery } from "../../../services/users/userApi";
-
+const ITEMS_PER_PAGE = 5;
 type StatCardProps = {
   title: string;
   value: number | string;
@@ -78,7 +78,7 @@ const DashboardPage = () => {
     error: usersError,
   } = useGetUsersWithFiltersQuery({
     page: currentPage,
-    limit: 10,
+    limit: ITEMS_PER_PAGE,
     search: searchTerm,
   });
 
@@ -110,10 +110,7 @@ const DashboardPage = () => {
     ...user,
     id: user.id,
   }));
-
-  console.log("usersHistories", usersHistories);
-
-  const totalUsers = usersResponse?.data?.pagination?.totalItems || 0;
+  // const totalUsers = usersResponse?.data?.pagination?.totalItems || 0;
 
   return (
     <>
@@ -203,13 +200,11 @@ const DashboardPage = () => {
           ) : (
             <HistoryTable
               mode="user"
-              // histories={usersResponse?.data?.data || []}
               histories={usersHistories}
-              itemsPerPage={10}
+              itemsPerPage={ITEMS_PER_PAGE}
+              pagination={usersResponse?.data?.pagination}
               currentPage={currentPage}
-              onPageChange={setCurrentPage}
-              // totalItems={usersResponse?.data?.pagination?.totalItems || 0}
-              totalItems={totalUsers}
+              setCurrentPage={setCurrentPage}
             />
           )}
         </Card>

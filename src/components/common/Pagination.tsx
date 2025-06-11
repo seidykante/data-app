@@ -1,9 +1,17 @@
 import React from "react";
-
-interface PaginationProps {
+interface paginationType {
+  currentPage: string;
+  hasNextPage: boolean;
+  pageSize: string;
   totalItems: number;
+  totalPages: number;
+}
+interface PaginationProps {
+  // totalItems: number;
   itemsPerPage: number;
+  // totalPages: number;
   currentPage: number;
+  pagination: paginationType;
   onPageChange: (page: number) => void;
 }
 
@@ -30,13 +38,25 @@ const generatePageNumbers = ({ totalPages, currentPage }: any) => {
 };
 
 const Pagination: React.FC<PaginationProps> = ({
-  totalItems,
+  // totalItems,
+  // totalPages,
   itemsPerPage,
+  pagination,
   currentPage,
   onPageChange,
 }) => {
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  // const navigate = useNavigation();
+  // const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const totalPages = Math.ceil(pagination?.totalItems / itemsPerPage);
 
+  // console.log(
+  //   "total page",
+  //   totalPages,
+  //   "current page",
+  //   currentPage,
+  //   "item perPage",
+  //   itemsPerPage
+  // );
   return (
     <div className="flex items-center justify-center mt-6 space-x-2">
       <button
@@ -60,7 +80,7 @@ const Pagination: React.FC<PaginationProps> = ({
                   : "bg-white border hover:bg-gray-50"
               }`}
             >
-              {page}
+              {String(page)}
             </button>
           )}
         </React.Fragment>
