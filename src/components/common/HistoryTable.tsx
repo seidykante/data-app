@@ -1,29 +1,30 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type SetStateAction } from "react";
 import Pagination from "./Pagination";
 import { Database, EllipsisVertical, FolderClock } from "lucide-react";
 import type { User, UserHealthLog } from "../../types";
+import { data } from "react-router-dom";
+import type { Dispatch } from "@reduxjs/toolkit";
 
 type TableMode = "user" | "data";
+interface paginationProps {
+  currentPage: string;
+  hasNextPage: boolean;
+  pageSize: string;
+  totalItems: number;
+  totalPages: number;
+}
 interface Props {
   mode?: TableMode;
   histories: User[] | UserHealthLog[];
   onActionClick?: (action: string, userId: string) => void;
   itemsPerPage?: number;
-  currentPage?: number;
+  // currentPage?: number;
   onPageChange?: (page: number) => void;
-  totalItems?: number;
-}
-
-// Format the status string to a more readable format
-// e.g., "not_filled" -> "Not Filled"
-function formatStatus(status: string): string {
-  if (!status) return "";
-  return status
-    .toLowerCase()
-    .split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+  pagination: paginationProps;
+  currentPage: number;
+  setCurrentPage: void;
+  // totalItems?: number;
 }
 
 export default function HistoryTable({
@@ -31,8 +32,11 @@ export default function HistoryTable({
   histories,
   onActionClick,
   itemsPerPage = 6,
+  pagination,
+  currentPage = 1,
+  setCurrentPage,
 }: Props) {
-  const [currentPage, setCurrentPage] = useState(1);
+  // const [currentPage, setCurrentPage] = useState(1);
   const [dropdownVisibleId, setDropdownVisibleId] = useState<string | null>(
     null
   );
@@ -46,11 +50,12 @@ export default function HistoryTable({
   // }, [currentPage, histories, itemsPerPage]);
 
   const truncateId = (id: string) =>
-    id.length <= 8 ? id : `${id.slice(0, 6)}...${id.slice(-4)}`;
+    id?.length <= 8 ? id : `${id?.slice(0, 6)}...${id?.slice(-4)}`;
 
   const toggleDropdown = (id: string) => {
     setDropdownVisibleId((prev) => (prev === id ? null : id));
   };
+  // console.log("histores", histories);
 
   const handleActionClick = (action: string, userId: string) => {
     onActionClick?.(action, userId);
@@ -70,7 +75,7 @@ export default function HistoryTable({
       setSelectedItems(new Set());
     }
   };
-
+  // console.log("hostories", histories);
   // Handle individual row checkbox change
   const handleRowCheckboxChange = (id: string) => {
     const newSelectedItems = new Set(selectedItems);
@@ -130,8 +135,11 @@ export default function HistoryTable({
             </tr>
           </thead>
           <tbody>
-            {safeHistories.map((entry: any, index: number) => (
-              <tr key={entry.id || index} className="border-t relative text-sm">
+            {safeHistories.map((entry: any) => (
+              <tr
+                key={entry.id || entry.date}
+                className="border-t relative text-sm"
+              >
                 {mode === "user" ? (
                   <>
                     <td className="p-4">
@@ -158,7 +166,11 @@ export default function HistoryTable({
                         {entry.firstname} {entry.lastname}
                       </span>
                     </td>
-                    <td className="p-4">{truncateId(entry.patientId)}</td>
+                    <td className="p-4">
+                      {entry.patientId
+                        ? truncateId(entry.patientId)
+                        : "No Patient ID"}
+                    </td>
                     <td className="p-4">
                       {new Intl.DateTimeFormat("en-US", {
                         year: "numeric",
@@ -167,8 +179,9 @@ export default function HistoryTable({
                       }).format(new Date(entry.lastActive))}
                     </td>
                     <td className="p-4">
-                      {/* {entry.reminderStatus} */}
-                      {formatStatus(entry.reminderStatus)}
+                      {entry.reminderStatus
+                        ? entry.reminderStatus
+                        : "No Reminder"}
                     </td>
                     <td className="p-4">
                       <span
@@ -182,8 +195,7 @@ export default function HistoryTable({
                             : "bg-gray-300 text-gray-800"
                         }`}
                       >
-                        {/* {entry.status} */}
-                        {formatStatus(entry.status)}
+                        {entry.status}
                       </span>
                     </td>
                     {onActionClick && (
@@ -192,16 +204,7 @@ export default function HistoryTable({
                           <EllipsisVertical size={20} />
                         </button>
                         {dropdownVisibleId === entry.id && (
-                          <div
-                            className={`absolute z-20 w-36 bg-white border shadow-lg rounded-md right-0
-                              ${
-                                index === safeHistories.length - 1 ||
-                                index === safeHistories.length - 2
-                                  ? "bottom-full mb-2"
-                                  : "top-full mt-2"
-                              }
-                            `}
-                          >
+                          <div className="absolute z-10 top-full mt-2 w-36 bg-white border shadow-lg rounded-md right-0">
                             <ul className="py-2 text-sm font-semibold text-gray-700">
                               <li>
                                 <button
@@ -236,7 +239,7 @@ export default function HistoryTable({
                     <td className="p-5">{entry.date}</td>
                     <td className="p-5">{entry.glucose}</td>
                     <td className="p-5">{entry.water}</td>
-                    <td className="p-5">{entry.meal}</td>
+                    <td className="p-5">{entry.food}</td>
                     <td className="p-5">{entry.heartRate}</td>
                     <td className="p-5">{entry.exercise}</td>
                     <td className="p-5">{entry.sleep}</td>
@@ -250,8 +253,10 @@ export default function HistoryTable({
 
       <div className="mt-4">
         <Pagination
-          totalItems={safeHistories.length}
+          // totalItems={safeHistories.length}
           itemsPerPage={itemsPerPage}
+          // totalPages={pagination.totalPages}
+          pagination={pagination}
           currentPage={currentPage}
           onPageChange={setCurrentPage}
         />

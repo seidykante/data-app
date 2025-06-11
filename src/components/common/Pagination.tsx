@@ -1,9 +1,18 @@
 import React from "react";
-
-interface PaginationProps {
+import { useNavigation } from "react-router-dom";
+interface paginationType {
+  currentPage: string;
+  hasNextPage: boolean;
+  pageSize: string;
   totalItems: number;
+  totalPages: number;
+}
+interface PaginationProps {
+  // totalItems: number;
   itemsPerPage: number;
+  // totalPages: number;
   currentPage: number;
+  pagination: paginationType;
   onPageChange: (page: number) => void;
 }
 
@@ -30,13 +39,33 @@ const generatePageNumbers = ({ totalPages, currentPage }: any) => {
 };
 
 const Pagination: React.FC<PaginationProps> = ({
-  totalItems,
+  // totalItems,
   itemsPerPage,
+  // totalPages,
+  pagination,
   currentPage,
   onPageChange,
 }) => {
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-
+  // const navigate = useNavigation();
+  // const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const totalPages = Math.ceil(pagination?.totalItems / itemsPerPage);
+  // const handlePageChange = async function () {
+  //   // const req = await fetch(
+  //   //   `https://data-app-be-production.up.railway.app/v1/dashboard/users?page=${currentPage}`
+  //   // );
+  //   // const res = req.json();
+  //   // console.log("res", res);
+  //   // console.log("req", req);
+  //   onPageChange((s) => s + 1);
+  // };
+  console.log(
+    "total page",
+    totalPages,
+    "current page",
+    currentPage,
+    "item perPage",
+    itemsPerPage
+  );
   return (
     <div className="flex items-center justify-center mt-6 space-x-2">
       <button
@@ -67,7 +96,7 @@ const Pagination: React.FC<PaginationProps> = ({
       ))}
 
       <button
-        onClick={() => onPageChange(currentPage + 1)}
+        onClick={() => onPageChange((s) => s + 1)}
         className="px-3 py-1 text-sm bg-white border rounded hover:bg-grey-500"
         disabled={currentPage === totalPages}
       >

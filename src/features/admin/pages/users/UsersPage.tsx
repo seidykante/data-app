@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProfilePanel from "../../../../components/users/ProfilePanel";
 import type { User } from "../../../../types";
 import DateRangePickerModal from "../../../../components/common/DateRangePickerModal";
@@ -12,6 +12,7 @@ import {
   useSendReminderMutation,
 } from "../../../../services/users/userApi";
 import { skipToken } from "@reduxjs/toolkit/query";
+const ITEMS_PER_PAGE = 5;
 
 const UsersPage = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -31,13 +32,24 @@ const UsersPage = () => {
     data: usersResponse,
     isLoading,
     error,
+    refetch,
   } = useGetUsersWithFiltersQuery({
     page: currentPage,
-    limit: 10,
+    limit: ITEMS_PER_PAGE,
     search: searchTerm,
     startDate: currentFilterDates.startDate?.toISOString(),
     endDate: currentFilterDates.endDate?.toISOString(),
   });
+
+  useEffect(
+    function () {
+      const fetch = async function () {
+        await refetch();
+      };
+      fetch();
+    },
+    [currentPage]
+  );
 
   const users = usersResponse?.data?.data || [];
   const {
@@ -306,8 +318,11 @@ const UsersPage = () => {
             histories={
               viewingDataUser ? userLogs?.data?.data ?? [] : usersHistories
             }
-            itemsPerPage={10}
+            itemsPerPage={ITEMS_PER_PAGE}
+            pagination={usersResponse?.data?.pagination}
             onActionClick={handleActionClick}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
           />
         )}
       </div>
