@@ -59,15 +59,18 @@ const Pagination: React.FC<PaginationProps> = ({
   // );
   return (
     <div className="flex items-center justify-center mt-6 space-x-2">
-      {Number(pagination?.currentPage) != 1 && (
-        <button
-          onClick={() => onPageChange(currentPage - 1)}
-          className="px-3 py-1 text-sm bg-white border rounded hover:bg-grey-500"
-          disabled={currentPage === 1}
-        >
-          Previous
-        </button>
-      )}
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        // className="px-3 py-1 text-sm bg-white border rounded hover:bg-grey-500"
+        className={`px-3 py-1 text-sm rounded ${
+          currentPage === 1
+            ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+            : "bg-white border hover:bg-gray-50"
+        }`}
+        disabled={currentPage === 1}
+      >
+        Previous
+      </button>
 
       {generatePageNumbers({ totalPages, currentPage }).map((page, index) => (
         <React.Fragment key={index}>
@@ -88,15 +91,19 @@ const Pagination: React.FC<PaginationProps> = ({
         </React.Fragment>
       ))}
 
-      {pagination?.hasNextPage && (
-        <button
-          onClick={() => onPageChange(currentPage + 1)}
-          className="px-3 py-1 text-sm bg-white border rounded hover:bg-grey-500"
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </button>
-      )}
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        // className="px-3 py-1 text-sm bg-white border rounded hover:bg-grey-500"
+        className={`px-3 py-1 text-sm rounded ${
+          currentPage === totalPages
+            ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+            : "bg-white border hover:bg-gray-50"
+        }
+        `}
+        disabled={currentPage === totalPages}
+      >
+        Next
+      </button>
     </div>
   );
 };

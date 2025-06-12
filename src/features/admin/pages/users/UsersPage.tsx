@@ -67,29 +67,31 @@ const UsersPage = () => {
   // console.log("userLogsResponse: ", userLogsResponse);
   // console.log("usersResponse: ", usersResponse);
 
-  console.log("Data logs pagination: ", userLogsResponse?.data?.pagination);
+  // console.log("Data logs pagination: ", userLogsResponse?.data?.pagination);
 
   useEffect(
     function () {
       const fetch = async function () {
-        await refetchUser();
+        if (viewingDataUser) {
+          await refetchUserLogs();
+        } else await refetchUser();
       };
       fetch();
     },
-    [refetchUser, currentPage]
+    [currentPage, viewingDataUser]
   );
 
-  useEffect(
-    function () {
-      const fetch = async function () {
-        // console.log("Fetching user logs for page:", currentPage);
-        // console.log("Logs user", userLogsResponse.data?.data);
-        await refetchUserLogs();
-      };
-      fetch();
-    },
-    [refetchUserLogs, currentPage]
-  );
+  // useEffect(
+  //   function () {
+  //     const fetch = async function () {
+  //       // console.log("Fetching user logs for page:", currentPage);
+  //       // console.log("Logs user", userLogsResponse.data?.data);
+  //       await refetchUserLogs();
+  //     };
+  //     fetch();
+  //   },
+  //   [currentPage]
+  // );
 
   // const {
   //   data: userLogs,
@@ -104,7 +106,7 @@ const UsersPage = () => {
   const [sendReminder, { isLoading: isSending }] = useSendReminderMutation();
 
   const handlePageChange = (page: number) => {
-    console.log("Changing page to:", page);
+    // console.log("Changing page to:", page);
     setCurrentPage(page);
   };
 

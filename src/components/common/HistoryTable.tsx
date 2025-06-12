@@ -63,7 +63,6 @@ export default function HistoryTable({
   const toggleDropdown = (id: string) => {
     setDropdownVisibleId((prev) => (prev === id ? null : id));
   };
-  // console.log("histores", histories);
 
   const handleActionClick = (action: string, userId: string) => {
     onActionClick?.(action, userId);
@@ -83,7 +82,7 @@ export default function HistoryTable({
       setSelectedItems(new Set());
     }
   };
-  // console.log("hostories", histories);
+
   // Handle individual row checkbox change
   const handleRowCheckboxChange = (id: string) => {
     const newSelectedItems = new Set(selectedItems);
