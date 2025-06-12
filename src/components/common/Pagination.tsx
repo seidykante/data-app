@@ -59,13 +59,15 @@ const Pagination: React.FC<PaginationProps> = ({
   // );
   return (
     <div className="flex items-center justify-center mt-6 space-x-2">
-      <button
-        onClick={() => onPageChange(currentPage - 1)}
-        className="px-3 py-1 text-sm bg-white border rounded hover:bg-grey-500"
-        disabled={currentPage === 1}
-      >
-        Previous
-      </button>
+      {Number(pagination?.currentPage) != 1 && (
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          className="px-3 py-1 text-sm bg-white border rounded hover:bg-grey-500"
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+      )}
 
       {generatePageNumbers({ totalPages, currentPage }).map((page, index) => (
         <React.Fragment key={index}>
@@ -86,13 +88,15 @@ const Pagination: React.FC<PaginationProps> = ({
         </React.Fragment>
       ))}
 
-      <button
-        onClick={() => onPageChange(currentPage + 1)}
-        className="px-3 py-1 text-sm bg-white border rounded hover:bg-grey-500"
-        disabled={currentPage === totalPages}
-      >
-        Next
-      </button>
+      {pagination?.hasNextPage && (
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          className="px-3 py-1 text-sm bg-white border rounded hover:bg-grey-500"
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
+      )}
     </div>
   );
 };

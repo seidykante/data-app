@@ -42,7 +42,7 @@ const ActivityCard: React.FC = () => {
           }
         >
           <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
+          <option value="weekly">Daily</option>
           <option value="monthly">Monthly</option>
         </select>
       </div>

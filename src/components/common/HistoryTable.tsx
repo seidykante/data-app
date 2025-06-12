@@ -1,4 +1,3 @@
-"use client";
 import { useState } from "react";
 import Pagination from "./Pagination";
 import { Database, EllipsisVertical, FolderClock } from "lucide-react";
@@ -20,9 +19,20 @@ interface Props {
   onPageChange?: (page: number) => void;
   pagination: paginationProps;
   currentPage: number;
-  setCurrentPage: void;
+  onSetCurrentPage: ( page: number) => void;
   // currentPage?: number;
   // totalItems?: number;
+}
+
+// Format the status string to a more readable format
+// e.g., "not_filled" -> "Not Filled"
+function formatStatus(status: string): string {
+  if (!status) return "";
+  return status
+    .toLowerCase()
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 export default function HistoryTable({
@@ -32,7 +42,7 @@ export default function HistoryTable({
   itemsPerPage = 6,
   pagination,
   currentPage = 1,
-  setCurrentPage,
+  onSetCurrentPage,
 }: Props) {
   // const [currentPage, setCurrentPage] = useState(1);
   const [dropdownVisibleId, setDropdownVisibleId] = useState<string | null>(
@@ -133,11 +143,8 @@ export default function HistoryTable({
             </tr>
           </thead>
           <tbody>
-            {safeHistories.map((entry: any) => (
-              <tr
-                key={entry.id || entry.date}
-                className="border-t relative text-sm"
-              >
+            {safeHistories.map((entry: any, index: number) => (
+              <tr key={entry.id || index} className="border-t relative text-sm">
                 {mode === "user" ? (
                   <>
                     <td className="p-4">
@@ -177,9 +184,8 @@ export default function HistoryTable({
                       }).format(new Date(entry.lastActive))}
                     </td>
                     <td className="p-4">
-                      {entry.reminderStatus
-                        ? entry.reminderStatus
-                        : "No Reminder"}
+                      {/* {entry.reminderStatus} */}
+                      {formatStatus(entry.reminderStatus)}
                     </td>
                     <td className="p-4">
                       <span
@@ -193,7 +199,8 @@ export default function HistoryTable({
                             : "bg-gray-300 text-gray-800"
                         }`}
                       >
-                        {entry.status}
+                        {/* {entry.status} */}
+                        {formatStatus(entry.status)}
                       </span>
                     </td>
                     {onActionClick && (
@@ -202,7 +209,17 @@ export default function HistoryTable({
                           <EllipsisVertical size={20} />
                         </button>
                         {dropdownVisibleId === entry.id && (
-                          <div className="absolute z-10 top-full mt-2 w-36 bg-white border shadow-lg rounded-md right-0">
+                          <div
+                            className={`absolute z-20 w-36 bg-white border shadow-lg rounded-md right-0
+                              ${ safeHistories?.length > 2 ?
+                                index === safeHistories?.length - 1 ||
+                                index === safeHistories?.length - 2
+                                  ? "bottom-full mb-2"
+                                  : "top-full mt-2"
+                                  : "bottom-full -mb-6"
+                              }
+                            `}
+                          >
                             <ul className="py-2 text-sm font-semibold text-gray-700">
                               <li>
                                 <button
@@ -256,7 +273,7 @@ export default function HistoryTable({
           // totalPages={pagination.totalPages}
           pagination={pagination}
           currentPage={currentPage}
-          onPageChange={setCurrentPage}
+          onPageChange={onSetCurrentPage}
         />
       </div>
     </>

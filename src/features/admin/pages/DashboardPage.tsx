@@ -82,6 +82,10 @@ const DashboardPage = () => {
     search: searchTerm,
   });
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   // console.log("usersResponse", usersResponse?.data);
   // console.log("pagination", usersResponse?.data?.pagination?.totalItems);
   // console.log("data", data);
@@ -89,12 +93,12 @@ const DashboardPage = () => {
     // Handle search change logic here
     setSearchTerm(value);
     // alert(`Searching for: ${value}`);
-    setCurrentPage(1); // reset to first page on new search
+    handlePageChange(1); // reset to first page on new search
   };
 
   const handleClearSearch = () => {
     setSearchTerm(""); // Clear the search term
-    setCurrentPage(1); // Reset page to 1
+    handlePageChange(1); // Reset page to 1
   };
 
   const usersToDisplay = (usersResponse?.data?.data || []).map((user: any) => ({
@@ -204,7 +208,7 @@ const DashboardPage = () => {
               itemsPerPage={ITEMS_PER_PAGE}
               pagination={usersResponse?.data?.pagination}
               currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
+              onSetCurrentPage={handlePageChange}
             />
           )}
         </Card>

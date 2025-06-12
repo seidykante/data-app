@@ -12,7 +12,8 @@ import {
   useSendReminderMutation,
 } from "../../../../services/users/userApi";
 import { skipToken } from "@reduxjs/toolkit/query";
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE_LOGS = 10;
 
 const UsersPage = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -32,7 +33,7 @@ const UsersPage = () => {
     data: usersResponse,
     isLoading,
     error,
-    refetch,
+    refetch: refetchUser,
   } = useGetUsersWithFiltersQuery({
     page: currentPage,
     limit: ITEMS_PER_PAGE,
@@ -41,23 +42,13 @@ const UsersPage = () => {
     endDate: currentFilterDates.endDate?.toISOString(),
   });
 
-  useEffect(
-    function () {
-      const fetch = async function () {
-        await refetch();
-      };
-      fetch();
-    },
-    [currentPage]
-  );
-
   const users = usersResponse?.data?.data || [];
 
   const healthLogsQueryParams = viewingDataUser
     ? {
         userId: viewingDataUser.id,
         page: currentPage,
-        limit: 10,
+        limit: ITEMS_PER_PAGE_LOGS,
         search: searchTerm,
         startDate: currentFilterDates.startDate?.toISOString(),
         endDate: currentFilterDates.endDate?.toISOString(),
@@ -68,10 +59,37 @@ const UsersPage = () => {
     data: userLogsResponse,
     isLoading: logsLoading,
     error: logsError,
+    refetch: refetchUserLogs,
   } = useGetUserHealthLogsQuery(healthLogsQueryParams);
 
   const userLogs = userLogsResponse?.data?.data || [];
-  const totalLogs = userLogsResponse?.data?.pagination?.totalItems || 0;
+
+  // console.log("userLogsResponse: ", userLogsResponse);
+  // console.log("usersResponse: ", usersResponse);
+
+  console.log("Data logs pagination: ", userLogsResponse?.data?.pagination);
+
+  useEffect(
+    function () {
+      const fetch = async function () {
+        await refetchUser();
+      };
+      fetch();
+    },
+    [refetchUser, currentPage]
+  );
+
+  useEffect(
+    function () {
+      const fetch = async function () {
+        // console.log("Fetching user logs for page:", currentPage);
+        // console.log("Logs user", userLogsResponse.data?.data);
+        await refetchUserLogs();
+      };
+      fetch();
+    },
+    [refetchUserLogs, currentPage]
+  );
 
   // const {
   //   data: userLogs,
@@ -85,15 +103,20 @@ const UsersPage = () => {
   // console.log("userlog", userLogs?.data?.data);
   const [sendReminder, { isLoading: isSending }] = useSendReminderMutation();
 
+  const handlePageChange = (page: number) => {
+    console.log("Changing page to:", page);
+    setCurrentPage(page);
+  };
+
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-    setCurrentPage(1);
+    handlePageChange(1);
     // alert(`Searching for: ${value}`);
   };
 
   const handleClearSearch = () => {
     setSearchTerm("");
-    setCurrentPage(1); // Reset page to 1
+    handlePageChange(1); // Reset page to 1
   };
 
   const handleUserClick = (user: User) => {
@@ -267,7 +290,7 @@ const UsersPage = () => {
           </button>
           {viewingDataUser ? (
             <span className="text-lg text-gray-500">
-              {">> " + viewingDataUser?.firstname + viewingDataUser.lastname}
+              {">> " + viewingDataUser?.firstname}
             </span>
           ) : (
             ""
@@ -361,14 +384,19 @@ const UsersPage = () => {
         ) : (
           <HistoryTable
             mode={viewingDataUser ? "data" : "user"}
-            histories={
-              viewingDataUser ? userLogs?.data?.data ?? [] : usersHistories
+            histories={viewingDataUser ? filteredUserLogs : usersHistories}
+            itemsPerPage={
+              viewingDataUser ? ITEMS_PER_PAGE_LOGS : ITEMS_PER_PAGE
             }
-            itemsPerPage={ITEMS_PER_PAGE}
-            pagination={usersResponse?.data?.pagination}
+            // pagination={usersResponse?.data?.pagination}
+            pagination={
+              viewingDataUser
+                ? userLogsResponse?.data?.pagination
+                : usersResponse?.data?.pagination
+            }
             onActionClick={handleActionClick}
             currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
+            onSetCurrentPage={handlePageChange}
           />
         )}
       </div>
